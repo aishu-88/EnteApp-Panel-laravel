@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    
     public function allUsers(Request $request)
     {
         // Query users with pagination and optional search
@@ -22,11 +23,13 @@ class UserController extends Controller
         return view('admin.all_users', compact('users'));
     }
 
-    public function serviceProviders()
-    {
-        $users = User::all();
-        return view('admin.service_provider', compact('users'));
-    }
+   public function serviceProviders()
+{
+    $users = User::where('user_type', 'service_provider')->get();
+
+    return view('admin.service_provider', compact('users'));
+}
+
 
     public function shopOwners()
     {
