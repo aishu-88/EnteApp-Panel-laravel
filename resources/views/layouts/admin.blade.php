@@ -177,37 +177,8 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarlist" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarlist">
-                                <i class="ri-list-unordered"></i>
-                                <span data-key="t-list">Listings</span>
-                            </a>
-
-                            <div class="collapse menu-dropdown" id="sidebarlist">
-                                <ul class="nav nav-sm flex-column">
-
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.all-listings') }}" class="nav-link" data-key="t-all-listings">
-                                            All listings
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.pending-approvals') }}" class="nav-link" data-key="t-pending-approvals">
-                                            Pending Approvals
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.featured-listings') }}" class="nav-link" data-key="t-featured-listings">
-                                            Featured Listings
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.categories') }}" class="nav-link" data-key="t-categories">
-                                            Categories
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <a class="nav-link menu-link" href="{{ route('admin.categories') }}">
+                                <i class="ri-file-chart-line"></i> <span data-key="t-categories">  Categories</span></a>
                         </li>
 
                         <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Staff Management Section</span>
@@ -224,10 +195,6 @@
                                         <a href="{{ route('admin.employees') }}" class="nav-link" data-key="t-notices">
                                             Employees
                                         </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.roles-permissions') }}" class="nav-link" data-key="t-emergency-contacts">
-                                            Roles & Permissions </a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="{{ route('admin.activity-logs') }}" class="nav-link" data-key="t-announcements">
