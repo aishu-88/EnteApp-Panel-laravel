@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\MainCategory;
 use Illuminate\Http\Request;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class VendorController extends Controller
@@ -15,7 +18,16 @@ class VendorController extends Controller
      */
     public function create()
     {
-        return view('provider.add_vendor');
+        $mainCategories = MainCategory::where('status', 'active')->get();
+        return view('provider.add_vendor', compact('mainCategories'));
+    }
+
+    public function getByMain($id)
+    {
+        return Category::where('main_category_id', $id)
+            ->where('status', 'active')
+            ->select('id', 'name')
+            ->get();
     }
 
     /**
@@ -73,7 +85,7 @@ class VendorController extends Controller
             'photo'              => $photoPath,
             'gallery'            => json_encode($galleryPaths),
             'plan_id'            => $request->plan_id,
-            'verification_status'=> 'Pending', // 🔥 Important
+            'verification_status' => 'Pending', // 🔥 Important
         ]);
 
         return redirect()
@@ -82,39 +94,69 @@ class VendorController extends Controller
     }
 
     public function index(Request $request)
-{
-    $vendors = Vendor::where('provider_id', auth()->id())
-        ->when($request->name, fn($q) =>
-            $q->where('shop_name', 'like', '%' . $request->name . '%')
-        )
-        ->when($request->category, fn($q) =>
-            $q->where('category', 'like', '%' . $request->category . '%')
-        )
-        ->when($request->ward, fn($q) =>
-            $q->where('address', 'like', '%' . $request->ward . '%')
-        )
-        ->when($request->plan_id, fn($q) =>
-            $q->where('plan_id', $request->plan_id)
-        )
-        ->latest()
-        ->paginate(10);
+    {
+        $vendors = Vendor::where('provider_id', auth()->id())
+            ->when(
+                $request->name,
+                fn($q) =>
+                $q->where('shop_name', 'like', '%' . $request->name . '%')
+            )
+            ->when(
+                $request->category,
+                fn($q) =>
+                $q->where('category', 'like', '%' . $request->category . '%')
+            )
+            ->when(
+                $request->ward,
+                fn($q) =>
+                $q->where('address', 'like', '%' . $request->ward . '%')
+            )
+            ->when(
+                $request->plan_id,
+                fn($q) =>
+                $q->where('plan_id', $request->plan_id)
+            )
+            ->latest()
+            ->paginate(10);
 
-    return view('provider.vendor_list', compact('vendors'));
-}
-public function toggleStatus($id)
-{
-    $vendor = Vendor::where('provider_id', auth()->id())->findOrFail($id);
+        return view('provider.vendor_list', compact('vendors'));
+    }
+    public function toggleStatus($id)
+    {
+        $vendor = Vendor::where('provider_id', auth()->id())->findOrFail($id);
 
-    $vendor->is_active = !$vendor->is_active;
-    $vendor->save();
+        $vendor->is_active = !$vendor->is_active;
+        $vendor->save();
 
-    return back()->with('success', 'Vendor status updated');
-}
-public function edit($id)
-{
-    $vendor = Vendor::where('provider_id', auth()->id())->findOrFail($id);
-    return view('provider.edit_vendor', compact('vendor'));
-}
+        return back()->with('success', 'Vendor status updated');
+    }
+    public function edit($id)
+    {
+        $vendor = Vendor::where('provider_id', auth()->id())->findOrFail($id);
+        return view('provider.edit_vendor', compact('vendor'));
+    }
 
+    public function categoriesByType(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:service,shop',
+        ]);
 
+        // Find main category (Service / Shop)
+        $main = MainCategory::where('slug', $request->type)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$main) {
+            return response()->json([]);
+        }
+
+        // Load sub categories
+        return response()->json(
+            $main->categories()
+                ->where('status', 'active')
+                ->select('id', 'name')
+                ->get()
+        );
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
     LoginController,
@@ -28,6 +29,7 @@ use App\Http\Controllers\provider\{
 | Home
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -66,6 +68,16 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/listings/pending-approvals', [ListingController::class, 'pendingApprovals'])->name('pending-approvals');
         Route::get('/listings/featured', [ListingController::class, 'featuredListings'])->name('featured-listings');
         Route::get('/listings/categories', [ListingController::class, 'categories'])->name('categories');
+        Route::post('/admin/categories',[CategoryController::class, 'store'])->name('categories.store');
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+
+        // Update category
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+
+        // Delete category
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+
         // Staff
         Route::get('/staff/employees', [StaffController::class, 'employees'])->name('employees');
         Route::get('/staff/roles-permissions', [StaffController::class, 'rolesPermissions'])->name('roles-permissions');
@@ -105,48 +117,52 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
+
 /*
 |--------------------------------------------------------------------------
 | SERVICE PROVIDER PANEL (Protected)
 |--------------------------------------------------------------------------
 */
+Route::get('/sub-categories/by-main/{id}', 
+    [CategoryController::class, 'getByMain']);
+
 Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provider.')->group(function () {  // 👈 Fixed: Group name prefix is correct
     Route::get('/dashboard', function () {
         return view('provider.dashboard');
-    })->name('dashboard');  
+    })->name('dashboard');
 
     // Add Vendor Routes
     Route::get('/add-vendor', [VendorController::class, 'create'])->name('add-vendor');
     Route::post('/add-vendor', [VendorController::class, 'store']);
-
+    Route::get('/categories/by-type', [CategoryController::class, 'getCategoriesByType'])->name('categories.byType');
     // Vendor List Routes
     Route::get('/vendor-list', [VendorController::class, 'index'])->name('vendor-list');
 
     // Profile Routes (shared with Admin ProfileController)
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-Route::prefix('admin')
-    ->middleware(['auth', 'role:admin'])
-    ->group(function () {
+    Route::prefix('admin')
+        ->middleware(['auth', 'role:admin'])
+        ->group(function () {
 
-        Route::get('/profile', [ProfileController::class, 'edit'])
-            ->name('admin.profile');
+            Route::get('/profile', [ProfileController::class, 'edit'])
+                ->name('admin.profile');
 
-        Route::patch('/profile', [ProfileController::class, 'update'])
-            ->name('admin.profile.update');
+            Route::patch('/profile', [ProfileController::class, 'update'])
+                ->name('admin.profile.update');
 
-        Route::delete('/profile', [ProfileController::class, 'destroy'])
-            ->name('admin.profile.destroy');
-    });
+            Route::delete('/profile', [ProfileController::class, 'destroy'])
+                ->name('admin.profile.destroy');
+        });
 
-  Route::get('/profile', [ProviderProfileController::class, 'edit'])
-            ->name('profile');
+    Route::get('/profile', [ProviderProfileController::class, 'edit'])
+        ->name('profile');
 
-        Route::put('/profile', [ProviderProfileController::class, 'update'])
-            ->name('profile.update');
+    Route::put('/profile', [ProviderProfileController::class, 'update'])
+        ->name('profile.update');
 
-        Route::put('/password', [ProviderProfileController::class, 'updatePassword'])
-            ->name('password.update');
+    Route::put('/password', [ProviderProfileController::class, 'updatePassword'])
+        ->name('password.update');
 
 
     // Logout (POST only, shared LogoutController)

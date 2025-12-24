@@ -16,10 +16,10 @@ class ServiceProviderSeeder extends Seeder
             ],
             [
                 'name' => 'Service Provider',
+                'phone' => '9999999990',
                 'password' => Hash::make('password123'),
                 'user_type' => 'service_provider',
                 'status' => 'active',
-                'email_verified_at' => now(),
             ]
         );
     }

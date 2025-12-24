@@ -3,12 +3,15 @@
 @section('title', 'Add Vendor')
 
 @section('content')
+
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-flex align-items-center justify-content-between">
             <h4 class="mb-0">Add New Vendor</h4>
             <ol class="breadcrumb m-0">
-                <li class="breadcrumb-item"><a href="{{ route('provider.dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item">
+                    <a href="{{ route('provider.dashboard') }}">Dashboard</a>
+                </li>
                 <li class="breadcrumb-item active">Add Vendor</li>
             </ol>
         </div>
@@ -19,6 +22,8 @@
     @csrf
 
     <div class="row">
+
+        {{-- ================= LEFT COLUMN ================= --}}
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
@@ -27,84 +32,100 @@
 
                     <div class="row g-3">
 
-                        <!-- Shop Name -->
+                        {{-- Shop Name --}}
                         <div class="col-md-6">
                             <label class="form-label">Shop Name <span class="text-danger">*</span></label>
                             <input type="text" name="shop_name" class="form-control" required>
                         </div>
 
-                        <!-- Category -->
+                        {{-- Main Category --}}
                         <div class="col-md-6">
-                            <label class="form-label">Category <span class="text-danger">*</span></label>
-                            <select name="category" class="form-select" required>
-                                <option value="">Select Category</option>
-                                <option>Electrician</option>
-                                <option>Plumber</option>
-                                <option>Grocery</option>
-                                <option>Auto</option>
-                                <option>Medical Shop</option>
-                                <option>Other</option>
+                            <label class="form-label">Main Category <span class="text-danger">*</span></label>
+                            <select id="main_category"
+                                name="main_category_id"
+                                class="form-select"
+                                required>
+                                <option value="">Select Main Category</option>
+
+                                @foreach($mainCategories as $main)
+                                <option value="{{ $main->id }}">{{ $main->name }}</option>
+                                @endforeach
                             </select>
                         </div>
 
-                        <!-- Owner Name -->
+
+                        {{-- Category --}}
+                        <div class="col-md-6">
+                            <label class="form-label">Category <span class="text-danger">*</span></label>
+                            <select id="category_id"
+                                name="category_id"
+                                class="form-select"
+                                required
+                                disabled>
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+
+
+                        {{-- Owner --}}
                         <div class="col-md-6">
                             <label class="form-label">Owner Name</label>
                             <input type="text" name="owner_name" class="form-control">
                         </div>
 
-                        <!-- Mobile -->
+                        {{-- Mobile --}}
                         <div class="col-md-6">
                             <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
                             <input type="tel" name="mobile" class="form-control" required>
                         </div>
 
-                        <!-- WhatsApp -->
+                        {{-- WhatsApp --}}
                         <div class="col-md-6">
                             <label class="form-label">WhatsApp Number</label>
                             <input type="tel" name="whatsapp" class="form-control">
                         </div>
 
-                        <!-- Address -->
+                        {{-- Address --}}
                         <div class="col-md-6">
                             <label class="form-label">Address & Ward / Area</label>
                             <input type="text" name="address" class="form-control">
                         </div>
 
-                        <!-- Panchayath -->
+                        {{-- Panchayath --}}
                         <div class="col-md-6">
                             <label class="form-label">Panchayath / Locality</label>
                             <input type="text" name="panchayath" class="form-control">
                         </div>
 
-                        <!-- Google Map -->
+                        {{-- Google Map --}}
                         <div class="col-md-6">
-                            <label class="form-label">Google Map Location (optional)</label>
-                            <input type="url" name="google_map" class="form-control" placeholder="https://maps.google.com/...">
+                            <label class="form-label">Google Map Location</label>
+                            <input type="url" name="google_map" class="form-control"
+                                placeholder="https://maps.google.com/...">
                         </div>
 
-                        <!-- Opening Time -->
+                        {{-- Opening --}}
                         <div class="col-md-3">
                             <label class="form-label">Opening Time</label>
                             <input type="time" name="opening_time" class="form-control">
                         </div>
 
-                        <!-- Closing Time -->
+                        {{-- Closing --}}
                         <div class="col-md-3">
                             <label class="form-label">Closing Time</label>
                             <input type="time" name="closing_time" class="form-control">
                         </div>
 
-                        <!-- Service Area -->
+                        {{-- Service Area --}}
                         <div class="col-12">
                             <label class="form-label">Service Coverage Area</label>
                             <input type="text" name="service_area" class="form-control">
                         </div>
 
-                        <!-- Description -->
+                        {{-- Description --}}
                         <div class="col-12">
-                            <label class="form-label">Short Description of Services</label>
-                            <textarea name="description" class="form-control" rows="3"></textarea>
+                            <label class="form-label">Short Description</label>
+                            <textarea name="description" rows="3" class="form-control"></textarea>
                         </div>
 
                     </div>
@@ -112,45 +133,37 @@
             </div>
         </div>
 
-        <!-- Right Column -->
+        {{-- ================= RIGHT COLUMN ================= --}}
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
 
                     <h5 class="mb-4">Uploads & Plan</h5>
 
-                    <!-- Main Photo -->
                     <div class="mb-3">
                         <label class="form-label">Shop / Person Photo</label>
                         <input type="file" name="photo" class="form-control" accept="image/*">
                     </div>
 
-                    <!-- Additional Images -->
                     <div class="mb-3">
                         <label class="form-label">Additional Images</label>
-                        <input type="file" name="gallery[]" class="form-control" multiple accept="image/*">
-                        <small class="text-muted">Allowed count depends on selected plan</small>
+                        <input type="file" name="gallery[]" class="form-control" multiple>
                     </div>
 
-                    <!-- Plan -->
                     <div class="mb-3">
                         <label class="form-label">Plan Selection <span class="text-danger">*</span></label>
                         <select name="plan_id" class="form-select" required>
                             <option value="">Select Plan</option>
-                            @for ($i = 1; $i <= 10; $i++)
+                            @for($i=1;$i<=10;$i++)
                                 <option value="{{ $i }}">Plan {{ $i }}</option>
-                            @endfor
+                                @endfor
                         </select>
                     </div>
 
-                    <!-- Info -->
                     <div class="alert alert-info">
-                        <i class="ri-information-line me-1"></i>
-                        Vendor will be saved with <strong>Verification Status: Pending</strong>.
-                        Admin approval is required.
+                        Vendor will be saved with <strong>Verification Status: Pending</strong>
                     </div>
 
-                    <!-- Submit -->
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">
                             <i class="ri-save-line me-1"></i> Save Vendor
@@ -160,6 +173,65 @@
                 </div>
             </div>
         </div>
+
     </div>
 </form>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        console.log('✅ Vendor page JS loaded');
+
+        const mainCategory = document.getElementById('main_category');
+        const categorySelect = document.getElementById('category_id');
+
+        function loadCategories(mainCategoryId) {
+
+            console.log('🔄 Loading sub categories for main ID:', mainCategoryId);
+
+            categorySelect.innerHTML = '<option value="">Loading...</option>';
+            categorySelect.disabled = true;
+
+            fetch(`/sub-categories/by-main/${mainCategoryId}`)
+                .then(res => res.json())
+                .then(data => {
+
+                    console.log('✅ Sub categories:', data);
+
+                    categorySelect.innerHTML = '<option value="">Select Category</option>';
+                    categorySelect.disabled = false;
+
+                    if (!data.length) {
+                        categorySelect.innerHTML +=
+                            '<option value="">No categories found</option>';
+                        return;
+                    }
+
+                    data.forEach(cat => {
+                        categorySelect.innerHTML +=
+                            `<option value="${cat.id}">${cat.name}</option>`;
+                    });
+                })
+                .catch(err => {
+                    console.error('❌ Fetch error:', err);
+                    categorySelect.innerHTML =
+                        '<option value="">Error loading categories</option>';
+                    categorySelect.disabled = true;
+                });
+        }
+
+        mainCategory.addEventListener('change', function() {
+            if (this.value) {
+                loadCategories(this.value);
+            } else {
+                categorySelect.innerHTML =
+                    '<option value="">Select Category</option>';
+                categorySelect.disabled = true;
+            }
+        });
+
+    });
+</script>
+@endpush

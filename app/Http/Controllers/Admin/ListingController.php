@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Listing;
+use App\Models\MainCategory;
 use Illuminate\Http\Request;
 
 class ListingController extends Controller
 {
-   public function allListings(Request $request)
+    public function allListings(Request $request)
     {
         // Query active listings with optional search and pagination
         $listings = Listing::query()
             ->where('status', 'active') // Filter for active listings
             ->when($request->get('search'), function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%")
-                             ->orWhere('description', 'like', "%{$search}%")
-                             ->orWhere('provider_name', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('provider_name', 'like', "%{$search}%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate(12); // Paginate for the grid (12 items per page)
@@ -25,53 +27,74 @@ class ListingController extends Controller
         return view('admin.all_list', compact('listings'));
     }
 
-   public function pendingApprovals(Request $request)
-{
-    $listings = Listing::query()
-        ->where('status', 'pending')
-        ->when($request->search, function ($query, $search) {
-            return $query->where('title', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%")
-                         ->orWhere('provider_name', 'like', "%{$search}%");
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(12);
+    public function pendingApprovals(Request $request)
+    {
+        $listings = Listing::query()
+            ->where('status', 'pending')
+            ->when($request->search, function ($query, $search) {
+                return $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('provider_name', 'like', "%{$search}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
 
-    return view('admin.pending_approval', compact('listings'));
-}
+        return view('admin.pending_approval', compact('listings'));
+    }
 
-public function approve($id)
-{
-    $listing = Listing::findOrFail($id);
-    $listing->update(['status' => 'active']);
-    return back()->with('success', 'Listing approved successfully.');
-}
+    public function approve($id)
+    {
+        $listing = Listing::findOrFail($id);
+        $listing->update(['status' => 'active']);
+        return back()->with('success', 'Listing approved successfully.');
+    }
 
-public function reject($id)
-{
-    $listing = Listing::findOrFail($id);
-    $listing->update(['status' => 'rejected']); // Or 'inactive'; adjust as needed
-    return back()->with('success', 'Listing rejected.');
-}
+    public function reject($id)
+    {
+        $listing = Listing::findOrFail($id);
+        $listing->update(['status' => 'rejected']); // Or 'inactive'; adjust as needed
+        return back()->with('success', 'Listing rejected.');
+    }
 
     public function featuredListings(Request $request)
-{
-    $listings = Listing::query()
-        ->where('featured', true) // Filter for featured listings
-        ->when($request->search, function ($query, $search) {
-            return $query->where('title', 'like', "%{$search}%")
-                         ->orWhere('description', 'like', "%{$search}%")
-                         ->orWhere('provider_name', 'like', "%{$search}%");
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(12);
+    {
+        $listings = Listing::query()
+            ->where('featured', true) // Filter for featured listings
+            ->when($request->search, function ($query, $search) {
+                return $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('provider_name', 'like', "%{$search}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
 
-    return view('admin.featured_list', compact('listings'));
-}
+        return view('admin.featured_list', compact('listings'));
+    }
 
     public function categories()
-    {
-        return view('admin.categories');
+    {  // 🔹 Fetch Service Main Category with its sub categories
+        $serviceMain = MainCategory::where('name', 'Service')
+            ->with(['categories' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->first();
+
+        // 🔹 Fetch Shop Main Category with its sub categories
+        $shopMain = MainCategory::where('name', 'Shop')
+            ->with(['categories' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->first();
+
+        // 🔹 Needed for modal dropdown
+        $mainCategories = MainCategory::where('status', 'active')->get();
+
+        return view('admin.categories', compact(
+            'serviceMain',
+            'shopMain',
+            'mainCategories'
+        ));
+    
     }
     public function deactivate($id)
     {

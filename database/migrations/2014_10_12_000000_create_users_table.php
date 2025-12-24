@@ -14,17 +14,18 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('phone', 15)->unique();
+            $table->string('email')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            
+
             // Custom fields added
             $table->string('user_type')->default('user'); // e.g., 'user', 'service_provider', 'shop_owner'
             $table->enum('status', ['active', 'pending', 'blocked', 'inactive'])->default('active');
             $table->string('avatar')->nullable();
             $table->string('service_type')->nullable(); // For service providers
             $table->string('shop_type')->nullable(); // For shop owners
-            
+
             $table->rememberToken();
             $table->timestamps();
         });
