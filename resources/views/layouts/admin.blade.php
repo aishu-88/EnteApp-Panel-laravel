@@ -181,7 +181,7 @@
                                 <i class="ri-file-chart-line"></i> <span data-key="t-categories">  Categories</span></a>
                         </li>
                      <li class="nav-item">
-                            <a class="nav-link menu-link" href="">
+                            <a class="nav-link menu-link" href="{{ route('admin.admin.plan') }}">
                                 <i class="ri-file-chart-line"></i> <span data-key="t-plans">  Plans</span></a>
                         </li>
 
