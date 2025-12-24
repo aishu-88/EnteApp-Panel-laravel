@@ -18,7 +18,7 @@
     </div>
 </div>
 
-<form action="" method="POST" enctype="multipart/form-data">
+<form action="{{ route('provider.vendors.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <div class="row">
@@ -176,62 +176,52 @@
 
     </div>
 </form>
-@endsection
-
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
-        console.log('✅ Vendor page JS loaded');
+    const mainCategory = document.getElementById('main_category');
+    const categorySelect = document.getElementById('category_id');
 
-        const mainCategory = document.getElementById('main_category');
-        const categorySelect = document.getElementById('category_id');
+    mainCategory.addEventListener('change', function () {
 
-        function loadCategories(mainCategoryId) {
+        const mainId = this.value;
 
-            console.log('🔄 Loading sub categories for main ID:', mainCategoryId);
-
-            categorySelect.innerHTML = '<option value="">Loading...</option>';
+        if (!mainId) {
+            categorySelect.innerHTML = '<option value="">Select Category</option>';
             categorySelect.disabled = true;
-
-            fetch(`/sub-categories/by-main/${mainCategoryId}`)
-                .then(res => res.json())
-                .then(data => {
-
-                    console.log('✅ Sub categories:', data);
-
-                    categorySelect.innerHTML = '<option value="">Select Category</option>';
-                    categorySelect.disabled = false;
-
-                    if (!data.length) {
-                        categorySelect.innerHTML +=
-                            '<option value="">No categories found</option>';
-                        return;
-                    }
-
-                    data.forEach(cat => {
-                        categorySelect.innerHTML +=
-                            `<option value="${cat.id}">${cat.name}</option>`;
-                    });
-                })
-                .catch(err => {
-                    console.error('❌ Fetch error:', err);
-                    categorySelect.innerHTML =
-                        '<option value="">Error loading categories</option>';
-                    categorySelect.disabled = true;
-                });
+            return;
         }
 
-        mainCategory.addEventListener('change', function() {
-            if (this.value) {
-                loadCategories(this.value);
-            } else {
-                categorySelect.innerHTML =
-                    '<option value="">Select Category</option>';
-                categorySelect.disabled = true;
-            }
-        });
+        categorySelect.innerHTML = '<option value="">Loading...</option>';
+        categorySelect.disabled = true;
 
+        fetch(`/provider/sub-categories/by-main/${mainId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                categorySelect.innerHTML = '<option value="">Select Category</option>';
+
+                if (data.length === 0) {
+                    categorySelect.innerHTML += '<option value="">No categories found</option>';
+                } else {
+                    data.forEach(cat => {
+                        categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    });
+                }
+
+                categorySelect.disabled = false;
+            })
+            .catch(error => {
+                console.error(error);
+                categorySelect.innerHTML = '<option value="">Error loading categories</option>';
+            });
     });
+
+});
 </script>
+
 @endpush
+@endsection
+
+

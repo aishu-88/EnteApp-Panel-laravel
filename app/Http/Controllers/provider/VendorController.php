@@ -18,17 +18,22 @@ class VendorController extends Controller
      */
     public function create()
     {
-        $mainCategories = MainCategory::where('status', 'active')->get();
+        $mainCategories = MainCategory::orderBy('name')->get();
+
         return view('provider.add_vendor', compact('mainCategories'));
     }
 
-    public function getByMain($id)
+    public function getByMain($mainCategoryId)
     {
-        return Category::where('main_category_id', $id)
-            ->where('status', 'active')
+        $categories = Category::where('main_category_id', $mainCategoryId)
             ->select('id', 'name')
+            ->orderBy('name')
             ->get();
+
+        return response()->json($categories);
     }
+
+
 
     /**
      * Store vendor (Pending approval)
@@ -36,63 +41,55 @@ class VendorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'shop_name'      => 'required|string|max:255',
-            'category'       => 'required|string|max:100',
-            'owner_name'     => 'nullable|string|max:255',
-            'mobile'         => 'required|string|max:20',
-            'whatsapp'       => 'nullable|string|max:20',
-            'address'        => 'nullable|string|max:500',
-            'panchayath'     => 'nullable|string|max:255',
-            'google_map'     => 'nullable|url',
-            'opening_time'   => 'nullable',
-            'closing_time'   => 'nullable',
-            'service_area'   => 'nullable|string|max:255',
-            'description'    => 'nullable|string',
-            'photo'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'gallery.*'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'plan_id'        => 'required|integer',
+            'shop_name'         => 'required|string|max:255',
+            'main_category_id'  => 'required|exists:main_categories,id',
+            'category_id'       => 'required|exists:categories,id',
+            'mobile'            => 'required|string|max:20',
+            'photo'             => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gallery.*'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'plan_id'           => 'required'
         ]);
 
-        // Main photo upload
-        $photoPath = null;
+        $vendor = new Vendor();
+        $vendor->provider_id      = Auth::guard('provider')->id();
+        $vendor->shop_name        = $request->shop_name;
+        $vendor->main_category_id = $request->main_category_id;
+        $vendor->category_id      = $request->category_id;
+        $vendor->owner_name       = $request->owner_name;
+        $vendor->mobile           = $request->mobile;
+        $vendor->whatsapp         = $request->whatsapp;
+        $vendor->address          = $request->address;
+        $vendor->panchayath       = $request->panchayath;
+        $vendor->google_map       = $request->google_map;
+        $vendor->opening_time     = $request->opening_time;
+        $vendor->closing_time     = $request->closing_time;
+        $vendor->service_area     = $request->service_area;
+        $vendor->description      = $request->description;
+        $vendor->plan_id          = $request->plan_id;
+
+        // verification status
+        $vendor->is_verified = 0; // pending
+
+        // PHOTO UPLOAD
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('vendors/main', 'public');
+            $vendor->photo = $request->file('photo')->store('vendors', 'public');
         }
 
-        // Gallery images upload
-        $galleryPaths = [];
+        // GALLERY UPLOAD
         if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $image) {
-                $galleryPaths[] = $image->store('vendors/gallery', 'public');
+            $gallery = [];
+            foreach ($request->file('gallery') as $img) {
+                $gallery[] = $img->store('vendors/gallery', 'public');
             }
+            $vendor->gallery = json_encode($gallery);
         }
 
-        // Create vendor
-        Vendor::create([
-            'provider_id'        => Auth::id(),
-            'shop_name'          => $request->shop_name,
-            'category'           => $request->category,
-            'owner_name'         => $request->owner_name,
-            'mobile'             => $request->mobile,
-            'whatsapp'           => $request->whatsapp,
-            'address'            => $request->address,
-            'panchayath'         => $request->panchayath,
-            'google_map'         => $request->google_map,
-            'opening_time'       => $request->opening_time,
-            'closing_time'       => $request->closing_time,
-            'service_area'       => $request->service_area,
-            'description'        => $request->description,
-            'photo'              => $photoPath,
-            'gallery'            => json_encode($galleryPaths),
-            'plan_id'            => $request->plan_id,
-            'verification_status' => 'Pending', // 🔥 Important
-        ]);
+        $vendor->save();
 
         return redirect()
-            ->route('provider.dashboard')
-            ->with('success', 'Vendor added successfully. Waiting for admin approval.');
+            ->route('provider.vendors.create')
+            ->with('success', 'Vendor added successfully (Pending verification)');
     }
-
     public function index(Request $request)
     {
         $vendors = Vendor::where('provider_id', auth()->id())

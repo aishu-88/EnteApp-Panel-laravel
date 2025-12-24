@@ -14,7 +14,10 @@ return new class extends Migration
             $table->unsignedBigInteger('provider_id');
 
             $table->string('shop_name');
-            $table->string('category');
+
+            // ✅ FIXED CATEGORY STRUCTURE
+            $table->unsignedBigInteger('main_category_id');
+            $table->unsignedBigInteger('category_id');
 
             $table->string('owner_name')->nullable();
 
@@ -30,23 +33,17 @@ return new class extends Migration
             $table->time('closing_time')->nullable();
 
             $table->string('service_area')->nullable();
-
             $table->text('description')->nullable();
 
             $table->string('photo')->nullable();
-
-            $table->longText('gallery')->nullable(); // IMPORTANT
+            $table->longText('gallery')->nullable();
 
             $table->integer('plan_id');
 
             $table->string('verification_status')->default('Pending');
-
             $table->boolean('is_active')->default(true);
 
             $table->timestamps();
-
-            // Optional foreign key (enable if providers table exists)
-            // $table->foreign('provider_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

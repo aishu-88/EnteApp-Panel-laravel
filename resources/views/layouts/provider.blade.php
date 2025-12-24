@@ -226,6 +226,7 @@
     </script>
     <script src="{{ asset('../js/app.js') }}"></script>
     @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>

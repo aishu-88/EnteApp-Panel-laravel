@@ -21,7 +21,8 @@ use App\Http\Controllers\Admin\{
 use App\Http\Controllers\provider\{
     DashboardController as ProviderDashboardController,
     VendorController,
-    ProviderProfileController
+    ProviderProfileController,
+    VendorController as ProviderVendorController
 };
 
 /*
@@ -123,13 +124,14 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
 | SERVICE PROVIDER PANEL (Protected)
 |--------------------------------------------------------------------------
 */
-Route::get('/sub-categories/by-main/{id}', 
-    [CategoryController::class, 'getByMain']);
 
-Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provider.')->group(function () {  // 👈 Fixed: Group name prefix is correct
+
+    Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provider.')->group(function () {  // 👈 Fixed: Group name prefix is correct
     Route::get('/dashboard', function () {
         return view('provider.dashboard');
     })->name('dashboard');
+
+    Route::get('/sub-categories/by-main/{mainCategory}',[ProviderVendorController::class, 'getByMain']);
 
     // Add Vendor Routes
     Route::get('/add-vendor', [VendorController::class, 'create'])->name('add-vendor');
@@ -137,6 +139,7 @@ Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provi
     Route::get('/categories/by-type', [CategoryController::class, 'getCategoriesByType'])->name('categories.byType');
     // Vendor List Routes
     Route::get('/vendor-list', [VendorController::class, 'index'])->name('vendor-list');
+    Route::post('/vendors/store', [VendorController::class, 'store'])->name('vendors.store');
 
     // Profile Routes (shared with Admin ProfileController)
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -188,5 +191,6 @@ Route::middleware(['auth', 'shop_owner'])->prefix('shop')->name('shop.')->group(
 Route::middleware('auth')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 });
+
 
 require __DIR__ . '/auth.php';
