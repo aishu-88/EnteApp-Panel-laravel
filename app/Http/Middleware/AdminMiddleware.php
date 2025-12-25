@@ -15,7 +15,7 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (!in_array(auth()->user()->user_type, ['admin', 'service_provider', 'shop_owner'])) {
+        if (!in_array(auth()->user()->user_type, ['admin', 'service_provider', 'shop_owner','staff'])) {
             abort(403);
         }
 

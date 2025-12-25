@@ -226,14 +226,6 @@
                                         <a href="{{ route('admin.create-ads') }}" class="nav-link" data-key="t-create-ad">
                                             Create New Ad </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.pending-ads') }}" class="nav-link" data-key="t-pending-ad">
-                                            Pending Ads </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.ad-slots-management') }}" class="nav-link" data-key="t-pending-ad">
-                                            Ads Slots Management </a>
-                                    </li>
                                 </ul>
                             </div>
                         </li>

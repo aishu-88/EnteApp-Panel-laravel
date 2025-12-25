@@ -34,6 +34,7 @@ class AuthenticatedSessionController extends Controller
             'admin'            => redirect()->route('admin.dashboard'),
             'service_provider' => redirect()->route('provider.dashboard'),
             'shop_owner'       => redirect()->route('shop.dashboard'),
+            // 'staff'       => redirect()->route('staff.dashboard'),
             'user'             => redirect()->route('users.index'),
             default            => redirect('/'),
         };
