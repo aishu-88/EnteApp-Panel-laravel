@@ -16,7 +16,8 @@ use App\Http\Controllers\Admin\{
     InformationController,
     ReportController,
     SettingController,
-    ProfileController
+    ProfileController,
+    PlanController
 };
 use App\Http\Controllers\provider\{
     DashboardController as ProviderDashboardController,
@@ -107,6 +108,9 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/information/local-announcements', [InformationController::class, 'localAnnouncements'])->name('local-announcements');
         // Reports
         Route::get('/reports', [ReportController::class, 'index'])->name('reports');
+      Route::get('/plans', [PlanController::class, 'index'])->name('admin.plan');
+      Route::get('/plans/create', [PlanController::class, 'create'])->name('admin.plan.create');
+      Route::post('/plans', [PlanController::class, 'store'])->name('admin.plan.store');
         // Settings
         Route::get('/settings/general', [SettingController::class, 'generalSettings'])->name('general-settings');
         Route::get('/settings/app-configuration', [SettingController::class, 'appConfiguration'])->name('app-configuration');
@@ -118,8 +122,7 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-
-/*
+    /*
 |--------------------------------------------------------------------------
 | SERVICE PROVIDER PANEL (Protected)
 |--------------------------------------------------------------------------
