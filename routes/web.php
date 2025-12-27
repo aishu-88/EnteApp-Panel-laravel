@@ -91,10 +91,10 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/staff/roles-permissions', [StaffController::class, 'rolesPermissions'])->name('roles-permissions');
         Route::get('/staff/activity-logs', [StaffController::class, 'activityLogs'])->name('activity-logs');
         // Ads
-        Route::get('/advertisements/all', [AdvertisementController::class, 'allAds'])->name('all-ads');
-        Route::get('/advertisements/create', [AdvertisementController::class, 'create'])->name('create-ads');
-        Route::get('/advertisements/pending', [AdvertisementController::class, 'pendingAds'])->name('pending-ads');
-        Route::get('/advertisements/slots', [AdvertisementController::class, 'adSlotsManagement'])->name('ad-slots-management');
+        Route::get('/ads', [AdvertisementController::class, 'allAds'])->name('all-ads');
+        // Route::get('/advertisements/create', [AdvertisementController::class, 'create'])->name('create-ads');
+        Route::get('/ads/create', [AdvertisementController::class, 'create'])->name('create-ads');
+        Route::post('/ads/store', [AdvertisementController::class, 'store'])->name('ads.store');
         // Offers
         Route::get('/offers/all', [OfferController::class, 'allOffers'])->name('all-offers');
         Route::get('/offers/create', [OfferController::class, 'create'])->name('create-offer');
@@ -179,18 +179,10 @@ Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provi
     // Profile Routes (shared with Admin ProfileController)
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::prefix('admin')
-        ->middleware(['auth', 'role:admin'])
-        ->group(function () {
-
-            Route::get('/profile', [ProfileController::class, 'edit'])
-                ->name('admin.profile');
-
-            Route::patch('/profile', [ProfileController::class, 'update'])
-                ->name('admin.profile.update');
-
-            Route::delete('/profile', [ProfileController::class, 'destroy'])
-                ->name('admin.profile.destroy');
+    Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy']) ->name('admin.profile.destroy');
         });
 
     Route::get('/profile', [ProviderProfileController::class, 'edit'])

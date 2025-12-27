@@ -260,6 +260,7 @@
                                             data-key="t-create-ad">
                                             Create New Ad </a>
                                     </li>
+<<<<<<< HEAD
                                     <li class="nav-item">
                                         <a href="{{ route('admin.pending-ads') }}" class="nav-link"
                                             data-key="t-pending-ad">
@@ -270,6 +271,8 @@
                                             data-key="t-pending-ad">
                                             Ads Slots Management </a>
                                     </li>
+=======
+>>>>>>> a6133456a407d61e0cf930ae49ca03a0dd10ace0
                                 </ul>
                             </div>
                         </li>
