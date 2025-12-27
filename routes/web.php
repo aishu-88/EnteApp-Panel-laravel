@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminProviderController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
@@ -20,6 +21,7 @@ use App\Http\Controllers\Admin\{
     PlanController
 };
 use App\Http\Controllers\provider\{
+    AuthController,
     DashboardController as ProviderDashboardController,
     VendorController,
     ProviderProfileController,
@@ -65,12 +67,16 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/users/shop-owners', [UserController::class, 'shopOwners'])->name('shop-owners');
         Route::get('/users/verification-requests', [UserController::class, 'verificationRequests'])->name('verification-requests');
         Route::get('/users/blocked', [UserController::class, 'blockedUsers'])->name('blocked-users');
+
+        Route::patch('/vendor-verifications/{id}/approve', [UserController::class, 'approve'])->name('vendor.approve');
+
+        Route::delete('/vendor-verifications/{id}', [UserController::class, 'delete'])->name('vendor.delete');
         // Listings
         Route::get('/listings/all', [ListingController::class, 'allListings'])->name('all-listings');
         Route::get('/listings/pending-approvals', [ListingController::class, 'pendingApprovals'])->name('pending-approvals');
         Route::get('/listings/featured', [ListingController::class, 'featuredListings'])->name('featured-listings');
         Route::get('/listings/categories', [ListingController::class, 'categories'])->name('categories');
-        Route::post('/admin/categories',[CategoryController::class, 'store'])->name('categories.store');
+        Route::post('/admin/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
 
         // Update category
@@ -108,9 +114,9 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/information/local-announcements', [InformationController::class, 'localAnnouncements'])->name('local-announcements');
         // Reports
         Route::get('/reports', [ReportController::class, 'index'])->name('reports');
-      Route::get('/plans', [PlanController::class, 'index'])->name('admin.plan');
-      Route::get('/plans/create', [PlanController::class, 'create'])->name('admin.plan.create');
-      Route::post('/plans', [PlanController::class, 'store'])->name('admin.plan.store');
+        Route::get('/plans', [PlanController::class, 'index'])->name('admin.plan');
+        Route::get('/plans/create', [PlanController::class, 'create'])->name('admin.plan.create');
+        Route::post('/plans', [PlanController::class, 'store'])->name('admin.plan.store');
         // Settings
         Route::get('/settings/general', [SettingController::class, 'generalSettings'])->name('general-settings');
         Route::get('/settings/app-configuration', [SettingController::class, 'appConfiguration'])->name('app-configuration');
@@ -122,27 +128,53 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    /*
+
+
+
+
+    Route::prefix('provider')->name('provider.')->group(function () {
+
+    Route::get('/register', [AuthController::class, 'showRegister'])
+        ->name('register');
+
+    Route::post('/register', [AuthController::class, 'register'])
+        ->name('register.store');
+
+    Route::get('/login', [AuthController::class, 'showLogin'])
+        ->name('login');
+
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login.store');
+});
+
+/*
 |--------------------------------------------------------------------------
 | SERVICE PROVIDER PANEL (Protected)
 |--------------------------------------------------------------------------
 */
 
 
-    Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provider.')->group(function () {  // 👈 Fixed: Group name prefix is correct
+
+
+Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provider.')->group(function () {  // 👈 Fixed: Group name prefix is correct
     Route::get('/dashboard', function () {
         return view('provider.dashboard');
     })->name('dashboard');
 
-    Route::get('/sub-categories/by-main/{mainCategory}',[ProviderVendorController::class, 'getByMain']);
+    Route::get('/sub-categories/by-main/{mainCategory}', [ProviderVendorController::class, 'getByMain']);
 
-    // Add Vendor Routes
+
     Route::get('/add-vendor', [VendorController::class, 'create'])->name('add-vendor');
     Route::post('/add-vendor', [VendorController::class, 'store']);
     Route::get('/categories/by-type', [CategoryController::class, 'getCategoriesByType'])->name('categories.byType');
-    // Vendor List Routes
+
     Route::get('/vendor-list', [VendorController::class, 'index'])->name('vendor-list');
     Route::post('/vendors/store', [VendorController::class, 'store'])->name('vendors.store');
+    Route::get('vendors/{vendor}/edit', [VendorController::class, 'edit'])->name('vendors.edit');
+    Route::put('vendors/{vendor}', [VendorController::class, 'update'])->name('vendors.update');
+
+
+    Route::patch('vendors/{vendor}/toggle', [VendorController::class, 'toggle'])->name('vendors.toggle');
 
     // Profile Routes (shared with Admin ProfileController)
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -194,6 +226,8 @@ Route::middleware(['auth', 'shop_owner'])->prefix('shop')->name('shop.')->group(
 Route::middleware('auth')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
 });
+
+
 
 
 require __DIR__ . '/auth.php';

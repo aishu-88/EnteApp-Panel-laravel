@@ -1,6 +1,7 @@
 {{-- resources/views/layouts/admin.blade.php --}}
 <!doctype html>
-<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
+    data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
 
 <head>
     <meta charset="utf-8" />
@@ -44,7 +45,9 @@
                                 </span>
                             </a>
                         </div>
-                        <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger material-shadow-none" id="topnav-hamburger-icon">
+                        <button type="button"
+                            class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger material-shadow-none"
+                            id="topnav-hamburger-icon">
                             <span class="hamburger-icon">
                                 <span></span>
                                 <span></span>
@@ -54,34 +57,50 @@
                         {{-- App Search --}}
                         <form class="app-search d-none d-md-block">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Search..." autocomplete="off" id="search-options" value="">
+                                <input type="text" class="form-control" placeholder="Search..." autocomplete="off"
+                                    id="search-options" value="">
                                 <span class="mdi mdi-magnify search-widget-icon"></span>
-                                <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none" id="search-close-options"></span>
+                                <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
+                                    id="search-close-options"></span>
                             </div>
                         </form>
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="ms-1 header-item d-none d-sm-flex">
-                            <button type="button" class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle light-dark-mode">
+                            <button type="button"
+                                class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle light-dark-mode">
                                 <i class='bx bx-moon fs-22'></i>
                             </button>
                         </div>
                         <div class="dropdown ms-sm-3 header-item topbar-user">
-                            <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
-                                    <img class="rounded-circle header-profile-user" src="{{ asset('../images/users/avatar-1.jpg') }}" alt="Header Avatar">
+                                    <img class="rounded-circle header-profile-user"
+                                        src="{{ asset('../images/users/avatar-1.jpg') }}" alt="Header Avatar">
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">Anna Adame</span>
-                                        <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">Founder</span>
+                                        <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
+                                            {{ Auth::user()->name }}
+                                        </span>
+
+                                        <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
+                                            {{ Auth::user()->user_type }}
+                                        </span>
                                     </span>
                                 </span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <h6 class="dropdown-header">Welcome Anna!</h6>
-                                <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
-                                <a class="dropdown-item" href=""><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
+                                <h6 class="dropdown-header">Welcome {{ Auth::user()->name }}</h6>
+                                <a class="dropdown-item" href="{{ route('admin.profile') }}"><i
+                                        class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Profile</span></a>
+                                <a class="dropdown-item" href=""><i
+                                        class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i>
+                                    <span class="align-middle">Messages</span></a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href=""><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a>
+                                <a class="dropdown-item" href=""><i
+                                        class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Settings</span></a>
                                 <form method="POST" action="{{ route('admin.logout') }}">
                                     @csrf
                                     <button type="submit" class="nav-link menu-link btn btn-link ">
@@ -116,7 +135,8 @@
                         <img src="{{ asset('../images/logo.png') }}" alt="" height="35">
                     </span>
                 </a>
-                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
+                    id="vertical-hover">
                     <i class="ri-record-circle-line"></i>
                 </button>
             </div>
@@ -129,13 +149,15 @@
                         <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('admin.dashboard') }}">
-                                <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span></a>
+                                <i class="ri-dashboard-2-line"></i> <span
+                                    data-key="t-dashboards">Dashboards</span></a>
                         </li> {{-- end Dashboard Menu --}}
 
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">User Management</span></li>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">User
+                                Management</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarUser" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarUser">
+                            <a class="nav-link menu-link" href="#sidebarUser" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarUser">
                                 <i class="ri-account-circle-line"></i>
                                 <span data-key="t-User">Users</span>
                             </a>
@@ -144,30 +166,35 @@
                                 <ul class="nav nav-sm flex-column">
 
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.all-users') }}" class="nav-link" data-key="t-allusers">
+                                        <a href="{{ route('admin.all-users') }}" class="nav-link"
+                                            data-key="t-allusers">
                                             All Users
                                         </a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.service-providers') }}" class="nav-link" data-key="t-providers">
+                                        <a href="{{ route('admin.service-providers') }}" class="nav-link"
+                                            data-key="t-providers">
                                             Service Providers
                                         </a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.shop-owners') }}" class="nav-link" data-key="t-shop-owners">
+                                        <a href="{{ route('admin.shop-owners') }}" class="nav-link"
+                                            data-key="t-shop-owners">
                                             Shop Owners
                                         </a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.verification-requests') }}" class="nav-link" data-key="t-verification-requests">
+                                        <a href="{{ route('admin.verification-requests') }}" class="nav-link"
+                                            data-key="t-verification-requests">
                                             Verification Requests
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.blocked-users') }}" class="nav-link" data-key="t-blocked-users">
+                                        <a href="{{ route('admin.blocked-users') }}" class="nav-link"
+                                            data-key="t-blocked-users">
                                             Blocked Users
                                         </a>
                                     </li>
@@ -178,84 +205,96 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('admin.categories') }}">
-                                <i class="ri-file-chart-line"></i> <span data-key="t-categories">  Categories</span></a>
-                        </li>
-                     <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('admin.admin.plan') }}">
-                                <i class="ri-file-chart-line"></i> <span data-key="t-plans">  Plans</span></a>
-                        </li>
-
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Staff Management Section</span>
+                                <i class="ri-file-chart-line"></i> <span data-key="t-categories">
+                                    Categories</span></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarStaff" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarStaff">
+                            <a class="nav-link menu-link" href="{{ route('admin.admin.plan') }}">
+                                <i class="ri-file-chart-line"></i> <span data-key="t-plans"> Plans</span></a>
+                        </li>
+
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Staff Management
+                                Section</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#sidebarStaff" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarStaff">
                                 <i class="ri-team-line"></i>
                                 <span data-key="t-list">Staff Management </span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarStaff">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.employees') }}" class="nav-link" data-key="t-notices">
+                                        <a href="{{ route('admin.employees') }}" class="nav-link"
+                                            data-key="t-notices">
                                             Employees
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.activity-logs') }}" class="nav-link" data-key="t-announcements">
+                                        <a href="{{ route('admin.activity-logs') }}" class="nav-link"
+                                            data-key="t-announcements">
                                             Activity Logs </a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
 
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pages</span></li>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Pages</span>
+                        </li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarAdvertisement" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarAdvertisement">
+                            <a class="nav-link menu-link" href="#sidebarAdvertisement" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarAdvertisement">
                                 <i class="ri-megaphone-line"></i>
                                 <span data-key="t-list">Advertisements </span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarAdvertisement">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.all-ads') }}" class="nav-link" data-key="t-all-ads">
+                                        <a href="{{ route('admin.all-ads') }}" class="nav-link"
+                                            data-key="t-all-ads">
                                             All Advertisements
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.create-ads') }}" class="nav-link" data-key="t-create-ad">
+                                        <a href="{{ route('admin.create-ads') }}" class="nav-link"
+                                            data-key="t-create-ad">
                                             Create New Ad </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.pending-ads') }}" class="nav-link" data-key="t-pending-ad">
+                                        <a href="{{ route('admin.pending-ads') }}" class="nav-link"
+                                            data-key="t-pending-ad">
                                             Pending Ads </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.ad-slots-management') }}" class="nav-link" data-key="t-pending-ad">
+                                        <a href="{{ route('admin.ad-slots-management') }}" class="nav-link"
+                                            data-key="t-pending-ad">
                                             Ads Slots Management </a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarOffer" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarOffer">
+                            <a class="nav-link menu-link" href="#sidebarOffer" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarOffer">
                                 <i class="ri-coupon-3-line"></i>
                                 <span data-key="t-list">Offers & Promotions </span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarOffer">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.all-offers') }}" class="nav-link" data-key="t-all-offers">
+                                        <a href="{{ route('admin.all-offers') }}" class="nav-link"
+                                            data-key="t-all-offers">
                                             All Offers
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.create-offer') }}" class="nav-link" data-key="t-create-offer">
+                                        <a href="{{ route('admin.create-offer') }}" class="nav-link"
+                                            data-key="t-create-offer">
                                             Create Offer </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.scheduled-offers') }}" class="nav-link" data-key="t-scheduled-offers">
+                                        <a href="{{ route('admin.scheduled-offers') }}" class="nav-link"
+                                            data-key="t-scheduled-offers">
                                             Scheduled Offers </a>
                                     </li>
                                 </ul>
@@ -263,15 +302,16 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarReward" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarReward">
+                            <a class="nav-link menu-link" href="#sidebarReward" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarReward">
                                 <i class="ri-trophy-line"></i>
                                 <span data-key="t-list">Rewards System </span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarReward">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.daily-challenges') }}" class="nav-link" data-key="t-challenges">
+                                        <a href="{{ route('admin.daily-challenges') }}" class="nav-link"
+                                            data-key="t-challenges">
                                             Daily Challenges
                                         </a>
                                     </li>
@@ -280,11 +320,13 @@
                                             Spin & Win Setup </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.scratch-cards') }}" class="nav-link" data-key="t-scratch-cards">
+                                        <a href="{{ route('admin.scratch-cards') }}" class="nav-link"
+                                            data-key="t-scratch-cards">
                                             Scratch Cards </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.reward-rules') }}" class="nav-link" data-key="t-reward-rules">
+                                        <a href="{{ route('admin.reward-rules') }}" class="nav-link"
+                                            data-key="t-reward-rules">
                                             Reward Rules </a>
                                     </li>
                                 </ul>
@@ -292,49 +334,56 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarGift" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarGift">
+                            <a class="nav-link menu-link" href="#sidebarGift" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarGift">
                                 <i class="ri-gift-line"></i>
                                 <span data-key="t-list"> Gift Cards & Wallet </span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarGift">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.gift-card-management') }}" class="nav-link" data-key="t-gift-card-management">
+                                        <a href="{{ route('admin.gift-card-management') }}" class="nav-link"
+                                            data-key="t-gift-card-management">
                                             Gift Card Management
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.wallet-transactions') }}" class="nav-link" data-key="t-wallet-transactions">
+                                        <a href="{{ route('admin.wallet-transactions') }}" class="nav-link"
+                                            data-key="t-wallet-transactions">
                                             Wallet Transactions </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.redemption-requests') }}" class="nav-link" data-key="t-redemption">
+                                        <a href="{{ route('admin.redemption-requests') }}" class="nav-link"
+                                            data-key="t-redemption">
                                             Redemption Requests </a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Information Section</span></li>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Information
+                                Section</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarInfo" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarInfo">
+                            <a class="nav-link menu-link" href="#sidebarInfo" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarInfo">
                                 <i class="ri-information-line"></i>
                                 <span data-key="t-list">Information & Notices </span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarInfo">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.panchayath-notices') }}" class="nav-link" data-key="t-notices">
+                                        <a href="{{ route('admin.panchayath-notices') }}" class="nav-link"
+                                            data-key="t-notices">
                                             Panchayath Notices
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.emergency-contacts') }}" class="nav-link" data-key="t-emergency-contacts">
+                                        <a href="{{ route('admin.emergency-contacts') }}" class="nav-link"
+                                            data-key="t-emergency-contacts">
                                             Emergency Contacts </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.local-announcements') }}" class="nav-link" data-key="t-announcements">
+                                        <a href="{{ route('admin.local-announcements') }}" class="nav-link"
+                                            data-key="t-announcements">
                                             Local Announcements </a>
                                     </li>
                                 </ul>
@@ -345,30 +394,35 @@
                                 <i class="ri-file-chart-line"></i> <span data-key="t-report">Reports</span></a>
                         </li>
 
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Profile & Settings</span></li>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Profile &
+                                Settings</span></li>
                         <li class="nav-item">
-                            <a class="nav-link menu-link" href="#sidebarProfile" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarProfile">
+                            <a class="nav-link menu-link" href="#sidebarProfile" data-bs-toggle="collapse"
+                                role="button" aria-expanded="false" aria-controls="sidebarProfile">
                                 <i class="ri-settings-3-line"></i>
                                 <span data-key="t-list">Settings</span>
                             </a>
                             <div class="collapse menu-dropdown" id="sidebarProfile">
                                 <ul class="nav nav-sm flex-column">
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.general-settings') }}" class="nav-link" data-key="t-notices">
+                                        <a href="{{ route('admin.general-settings') }}" class="nav-link"
+                                            data-key="t-notices">
                                             General Settings
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.app-configuration') }}" class="nav-link" data-key="t-emergency-contacts">
+                                        <a href="{{ route('admin.app-configuration') }}" class="nav-link"
+                                            data-key="t-emergency-contacts">
                                             App Configuration </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.locality-setup') }}" class="nav-link" data-key="t-announcements">
+                                        <a href="{{ route('admin.locality-setup') }}" class="nav-link"
+                                            data-key="t-announcements">
                                             Panchayath / Locality Setup </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ route('admin.notification-settings') }}" class="nav-link" data-key="t-announcements">
+                                        <a href="{{ route('admin.notification-settings') }}" class="nav-link"
+                                            data-key="t-announcements">
                                             Notification Settings</a>
                                     </li>
                                 </ul>

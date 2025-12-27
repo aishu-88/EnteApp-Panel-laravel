@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
+    data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
 
 <head>
     <meta charset="utf-8" />
@@ -43,7 +44,9 @@
                                 </span>
                             </a>
                         </div>
-                        <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger material-shadow-none" id="topnav-hamburger-icon">
+                        <button type="button"
+                            class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger material-shadow-none"
+                            id="topnav-hamburger-icon">
                             <span class="hamburger-icon">
                                 <span></span>
                                 <span></span>
@@ -53,34 +56,55 @@
                         {{-- App Search --}}
                         <form class="app-search d-none d-md-block">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Search..." autocomplete="off" id="search-options" value="">
+                                <input type="text" class="form-control" placeholder="Search..." autocomplete="off"
+                                    id="search-options" value="">
                                 <span class="mdi mdi-magnify search-widget-icon"></span>
-                                <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none" id="search-close-options"></span>
+                                <span class="mdi mdi-close-circle search-widget-icon search-widget-icon-close d-none"
+                                    id="search-close-options"></span>
                             </div>
                         </form>
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="ms-1 header-item d-none d-sm-flex">
-                            <button type="button" class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle light-dark-mode">
+                            <button type="button"
+                                class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle light-dark-mode">
                                 <i class='bx bx-moon fs-22'></i>
                             </button>
                         </div>
                         <div class="dropdown ms-sm-3 header-item topbar-user">
-                            <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
-                                    <img class="rounded-circle header-profile-user" src="{{ asset('../images/users/avatar-1.jpg') }}" alt="Header Avatar">
+                                    <img class="rounded-circle header-profile-user"
+                                        src="{{ Auth::user()->profile_image
+                                            ? asset('storage/' . Auth::user()->profile_image)
+                                            : asset('../images/users/avatar-1.jpg') }}"
+                                        alt="Header Avatar">
+
                                     <span class="text-start ms-xl-2">
-                                        <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">Anna Adame</span>
-                                        <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">Founder</span>
+                                        <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
+                                            {{ Auth::user()->name }}
+                                        </span>
+
+                                        <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
+                                            {{ Auth::user()->user_type === 'service_provider' ? 'Employee' : ucfirst(Auth::user()->user_type) }}
+                                        </span>
+
                                     </span>
                                 </span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
-                                <h6 class="dropdown-header">Welcome Anna!</h6>
-                                <a class="dropdown-item" href="{{ route('provider.profile') }}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
-                                <a class="dropdown-item" href=""><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
+                                <h6 class="dropdown-header">Welcome {{ Auth::user()->name }}</h6>
+                                <a class="dropdown-item" href="{{ route('provider.profile') }}"><i
+                                        class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Profile</span></a>
+                                <a class="dropdown-item" href=""><i
+                                        class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i>
+                                    <span class="align-middle">Messages</span></a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href=""><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a>
+                                <a class="dropdown-item" href=""><i
+                                        class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span
+                                        class="align-middle">Settings</span></a>
                                 <form method="POST" action="{{ route('provider.logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item">
@@ -114,7 +138,8 @@
                         <img src="{{ asset('../images/logo.png') }}" alt="" height="35">
                     </span>
                 </a>
-                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover"
+                    id="vertical-hover">
                     <i class="ri-record-circle-line"></i>
                 </button>
             </div>
@@ -159,9 +184,7 @@
                         <li class="nav-item">
                             <form method="POST" action="{{ route('provider.logout') }}">
                                 @csrf
-                                <button
-                                    type="submit"
-                                    class="nav-link menu-link logout-btn">
+                                <button type="submit" class="nav-link menu-link logout-btn">
                                     <i class="ri-logout-box-line"></i>
                                     <span data-key="t-logout">Logout</span>
                                 </button>
