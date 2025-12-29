@@ -1,4 +1,4 @@
-{{-- resources/views/admin/users/shop-owners.blade.php --}}
+{{-- resources/views/admin/vendors/approved.blade.php --}}
 @extends('layouts.admin')
 
 @section('content')
@@ -6,11 +6,11 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
-                <h4 class="mb-sm-0">Shop Owners</h4>
+                <h4 class="mb-sm-0">Approved Vendors</h4>
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.all-users') }}">Users</a></li>
-                        <li class="breadcrumb-item active">Shop Owners</li>
+                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Approved Vendors</li>
                     </ol>
                 </div>
             </div>
@@ -25,93 +25,78 @@
         </div>
     @endif
 
-    {{-- Search Form --}}
-    <div class="row mb-3">
-        <div class="col-12">
-            <form method="GET" action="{{ route('admin.shop-owners') }}">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" name="search" placeholder="Search by name, email, or shop type..." value="{{ request('search') }}">
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                        <a href="{{ route('admin.shop-owners') }}" class="btn btn-secondary">Clear</a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {{-- Shop Owners Table --}}
+    {{-- Approved Vendors Table --}}
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">People who run shops/businesses (grocery store, mobile shop) ({{ $users->total() }} total)</h5>
+                    <h5 class="card-title mb-0">
+                        Approved Vendors ({{ $vendors->total() }} total)
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0 align-middle">
                             <thead class="table-light">
                                 <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Shop Type</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Joined Date</th>
-                                    <th scope="col">Actions</th>
+                                    <th>Name / Shop</th>
+                                    <th>Owner</th>
+                                    <th>Category</th>
+                                    <th>Plan</th>
+                                    <th>Status</th>
+                                    <th>Joined Date</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($users as $user)
+                                @forelse($vendors as $vendor)
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
-                                                    <img src="{{ $user->avatar }}" alt="{{ $user->name }}" class="avatar-xs rounded-circle" />
+                                                    <img src="{{ $vendor->photo ? asset('storage/' . $vendor->photo) : asset('assets/images/default-shop.png') }}"
+                                                        alt="{{ $vendor->shop_name }}" class="avatar-xs rounded-circle" />
                                                 </div>
-                                                <div class="flex-grow-1">{{ $user->name }}</div>
+                                                <div class="flex-grow-1">{{ $vendor->shop_name }}</div>
                                             </div>
                                         </td>
-                                        <td>{{ $user->email }}</td>
+
+                                        <td>{{ $vendor->owner_name ?? ($vendor->provider->name ?? 'N/A') }}</td>
+
                                         <td>
-                                            <span class="badge bg-info-subtle text-info">{{ $user->shop_type ?? ucfirst(str_replace('_', ' ', $user->user_type)) }}</span>
+                                            {{ $vendor->mainCategory->name ?? '-' }} /
+                                            {{ $vendor->category->name ?? '-' }}
                                         </td>
+
+                                        <td>{{ $vendor->plan->title ?? 'Plan ' . $vendor->plan_id }}</td>
+
                                         <td>
-                                            @php $statusClass = match($user->status ?? 'active') { 'active' => 'bg-success', 'pending' => 'bg-warning', 'blocked' => 'bg-danger', default => 'bg-secondary' }; @endphp
-                                            <span class="badge {{ $statusClass }} text-{{ Str::before($statusClass, '-')}}">{{ ucfirst($user->status ?? 'active') }}</span>
+                                            <span class="badge {{ $vendor->verification_status === 'Approved' ? 'bg-success' : 'bg-warning' }}">
+                                                {{ $vendor->verification_status }}
+                                            </span>
                                         </td>
-                                        <td>{{ $user->created_at->format('Y-m-d') }}</td>
+
+                                        <td>{{ $vendor->created_at->format('Y-m-d') }}</td>
+
                                         <td>
-                                            <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-primary me-1">
-                                                <i class="ri-eye-line"></i> View
-                                            </a>
-                                            <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-warning me-1">
-                                                <i class="ri-edit-line"></i> Edit
-                                            </a>
-                                            @if(($user->status ?? 'active') === 'blocked')
-                                                <form action="{{ route('admin.users.unblock', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Unblock this user?')">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-success">
-                                                        <i class="ri-unlock-line"></i> Unblock
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <form action="{{ route('admin.users.block', $user->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Block this user?')">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-danger">
-                                                        <i class="ri-lock-line"></i> Block
-                                                    </button>
-                                                </form>
-                                            @endif
+
+                                            {{-- Delete Button --}}
+                                            <form action="{{ route('admin.vendor.delete', $vendor->id) }}" method="POST"
+                                                style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Delete this vendor?')">
+                                                    Delete
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">
+                                        <td colspan="7" class="text-center py-4">
                                             <div class="text-muted">
-                                                <i class="ri-store-line fs-2 mb-2 d-block"></i>
-                                                No shop owners found. {{ request('search') ? 'Try adjusting your search.' : 'Start by approving shop owners.' }}
+                                                No approved vendors found.
                                             </div>
                                         </td>
                                     </tr>
@@ -119,10 +104,11 @@
                             </tbody>
                         </table>
                     </div>
+
                     {{-- Pagination --}}
-                    @if($users->hasPages())
+                    @if (method_exists($vendors, 'links'))
                         <div class="d-flex justify-content-end mt-3">
-                            {{ $users->appends(request()->query())->links() }}
+                            {{ $vendors->appends(request()->query())->links() }}
                         </div>
                     @endif
                 </div>

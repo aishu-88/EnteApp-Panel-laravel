@@ -1,130 +1,109 @@
 @extends('layouts.admin')
 
 @section('content')
-    {{-- Page Title --}}
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
-                <h4 class="mb-sm-0">Verification Requests</h4>
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Verification Requests</li>
-                    </ol>
-                </div>
+    <div class="container-fluid">
+
+        {{-- Flash Message --}}
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show">
+                {{ session('success') }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        <div class="row mb-4">
+            <div class="col">
+                <h4 class="mb-0">Vendors Awaiting Verification</h4>
             </div>
         </div>
-    </div>
 
-    {{-- Verification Requests Table --}}
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Users Awaiting Verification Approval</h5>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Employee Name</th>
+                                <th>Shop Name</th>
+                                <th>Owner</th>
+                                <th>Mobile</th>
+                                <th>Main Category</th>
+                                <th>Category</th>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse($vendors as $vendor)
+                                <tr>
+
+                                    {{-- Provider ID --}}
+                                    <td>
+                                        {{ $vendor->provider->name ?? 'N/A' }}
+                                    </td>
+
+
+                                    <td>{{ $vendor->shop_name }}</td>
+                                    <td>{{ $vendor->owner_name ?? '-' }}</td>
+                                    <td>{{ $vendor->mobile }}</td>
+                                    <td>{{ $vendor->mainCategory->name ?? '-' }}</td>
+                                    <td>{{ $vendor->category->name ?? '-' }}</td>
+                                    <td>{{ $vendor->plan_id ?? '-' }}</td>
+
+                                    <td>
+                                        <span class="badge bg-warning">
+                                            {{ ucfirst($vendor->verification_status) }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{-- View --}}
+                                        <a href="{{ route('admin.vendor.show', $vendor->id) }}"
+                                            class="btn btn-sm btn-primary">
+                                            View
+                                        </a>
+
+                                        {{-- Approve --}}
+                                        <form action="{{ route('admin.vendor.approve', $vendor->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button class="btn btn-sm btn-success"
+                                                onclick="return confirm('Approve this vendor?')">
+                                                Approve
+                                            </button>
+                                        </form>
+
+                                        {{-- Delete --}}
+                                        <form action="{{ route('admin.vendor.delete', $vendor->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Delete this vendor?')">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">
+                                        No pending vendors found.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
                 </div>
 
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th>Requested Role</th>
-                                    <th>ID Proof</th>
-                                    <th>Submitted On</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @forelse ($requests as $req)
-                                    <tr>
-                                        {{-- User Name + Avatar --}}
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-2">
-                                                    <img src="{{ $req->user->avatar ? Storage::url($req->user->avatar) : asset('assets/images/users/avatar-1.jpg') }}"
-                                                         alt="{{ $req->user->name }}"
-                                                         class="avatar-xs rounded-circle">
-                                                </div>
-                                                <div class="flex-grow-1">{{ $req->user->name }}</div>
-                                            </div>
-                                        </td>
-
-                                        {{-- Email --}}
-                                        <td>{{ $req->user->email }}</td>
-
-                                        {{-- Role they want (Service Provider / Shop Owner) --}}
-                                        <td>{{ ucfirst($req->requested_role) }}</td>
-
-                                        {{-- ID Proof File --}}
-                                        <td>
-                                            @if($req->document_path)
-                                                <a href="{{ Storage::url($req->document_path) }}"
-                                                   class="btn btn-sm btn-info"
-                                                   target="_blank">
-                                                    View Document
-                                                </a>
-                                            @else
-                                                <span class="text-muted">No File</span>
-                                            @endif
-                                        </td>
-
-                                        {{-- Submission Date --}}
-                                        <td>{{ $req->created_at->format('Y-m-d') }}</td>
-
-                                        {{-- Status Badge --}}
-                                        <td>
-                                            @if ($req->status === 'pending')
-                                                <span class="badge bg-warning">Pending</span>
-                                            @elseif($req->status === 'approved')
-                                                <span class="badge bg-success">Approved</span>
-                                            @elseif($req->status === 'rejected')
-                                                <span class="badge bg-danger">Rejected</span>
-                                            @endif
-                                        </td>
-
-                                        {{-- Actions --}}
-                                        <td>
-                                            {{-- Approve --}}
-                                            <form action="{{ route('admin.verification.approve', $req->id) }}"
-                                                  method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-sm btn-success me-1"
-                                                        onclick="return confirm('Approve this verification request?')">
-                                                    Approve
-                                                </button>
-                                            </form>
-
-                                            {{-- Reject --}}
-                                            <form action="{{ route('admin.verification.reject', $req->id) }}"
-                                                  method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-sm btn-danger"
-                                                        onclick="return confirm('Reject this verification request?')">
-                                                    Reject
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center">No verification requests found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {{-- Pagination --}}
-                    <div class="d-flex justify-content-end mt-3">
-                        {{ $requests->links() }}
-                    </div>
+                <div class="d-flex justify-content-end mt-3">
+                    {{ $vendors->links() }}
                 </div>
             </div>
         </div>

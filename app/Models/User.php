@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Crypt;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -24,6 +25,12 @@ class User extends Authenticatable
         'avatar',
         'service_type',
         'shop_type',
+        'aadhaar_number',
+        'bank_account_number',
+        'terms_accepted',
+        'is_service_provider',
+        'provider_status',
+        'profile_image',
     ];
 
 
@@ -58,4 +65,15 @@ class User extends Authenticatable
     {
         return $this->roles->contains('name', $roleName);
     }
+
+    public function getMaskedAadhaarAttribute()
+{
+    if (!$this->aadhaar_number) {
+        return null;
+    }
+
+    $aadhaar = Crypt::decryptString($this->aadhaar_number);
+
+    return 'XXXX-XXXX-' . substr($aadhaar, -4);
+}
 }

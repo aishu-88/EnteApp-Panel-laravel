@@ -5,111 +5,143 @@ namespace App\Http\Controllers\Provider;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MainCategory;
-use Illuminate\Http\Request;
+use App\Models\Payment;
+use App\Models\Plan;
+use App\Models\User;
 use App\Models\Vendor;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class VendorController extends Controller
 {
-    /**
-     * Show add vendor form
-     */
+    /* =======================
+     * SHOW CREATE FORM
+     * ======================= */
     public function create()
     {
-        $mainCategories = MainCategory::where('status', 'active')->get();
-        return view('provider.add_vendor', compact('mainCategories'));
+        $mainCategories = MainCategory::orderBy('name')->get();
+        $plans = Plan::orderBy('amount')->get();
+
+        return view('provider.add_vendor', compact('mainCategories', 'plans'));
     }
 
-    public function getByMain($id)
+    /* =======================
+     * LOAD CATEGORIES BY MAIN
+     * ======================= */
+    public function getByMain($mainCategoryId)
     {
-        return Category::where('main_category_id', $id)
-            ->where('status', 'active')
+        return Category::where('main_category_id', $mainCategoryId)
             ->select('id', 'name')
+            ->orderBy('name')
             ->get();
     }
 
-    /**
-     * Store vendor (Pending approval)
-     */
+    /* =======================
+     * STORE VENDOR
+     * ======================= */
     public function store(Request $request)
     {
+
         $request->validate([
-            'shop_name'      => 'required|string|max:255',
-            'category'       => 'required|string|max:100',
-            'owner_name'     => 'nullable|string|max:255',
-            'mobile'         => 'required|string|max:20',
-            'whatsapp'       => 'nullable|string|max:20',
-            'address'        => 'nullable|string|max:500',
-            'panchayath'     => 'nullable|string|max:255',
-            'google_map'     => 'nullable|url',
-            'opening_time'   => 'nullable',
-            'closing_time'   => 'nullable',
-            'service_area'   => 'nullable|string|max:255',
-            'description'    => 'nullable|string',
-            'photo'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'gallery.*'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'plan_id'        => 'required|integer',
+            'shop_name'        => 'required|string|max:255',
+            'main_category_id' => 'required|exists:main_categories,id',
+            'category_id'      => 'required|exists:categories,id',
+            'mobile'           => 'required|string|max:20',
+            'plan_id'          => 'required|exists:plans,id',
+
+            'photo'            => 'nullable|image|max:2048',
+            'gallery.*'        => 'nullable|image|max:2048',
+
+            'payment_mode'     => 'required|in:gpay,bank_transfer,cash',
+            'transaction_id'   => 'nullable|required_if:payment_mode,gpay,bank_transfer',
         ]);
 
-        // Main photo upload
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('vendors/main', 'public');
-        }
+        /* PHOTO */
+        $photo = $request->hasFile('photo')
+            ? $request->file('photo')->store('vendors/photos', 'public')
+            : null;
 
-        // Gallery images upload
-        $galleryPaths = [];
+        /* GALLERY */
+        $gallery = [];
         if ($request->hasFile('gallery')) {
-            foreach ($request->file('gallery') as $image) {
-                $galleryPaths[] = $image->store('vendors/gallery', 'public');
+            foreach ($request->gallery as $img) {
+                $gallery[] = $img->store('vendors/gallery', 'public');
             }
         }
 
-        // Create vendor
-        Vendor::create([
-            'provider_id'        => Auth::id(),
-            'shop_name'          => $request->shop_name,
-            'category'           => $request->category,
-            'owner_name'         => $request->owner_name,
-            'mobile'             => $request->mobile,
-            'whatsapp'           => $request->whatsapp,
-            'address'            => $request->address,
-            'panchayath'         => $request->panchayath,
-            'google_map'         => $request->google_map,
-            'opening_time'       => $request->opening_time,
-            'closing_time'       => $request->closing_time,
-            'service_area'       => $request->service_area,
-            'description'        => $request->description,
-            'photo'              => $photoPath,
-            'gallery'            => json_encode($galleryPaths),
-            'plan_id'            => $request->plan_id,
-            'verification_status' => 'Pending', // 🔥 Important
+        /* SOCIAL LINKS */
+        $socialLinks = null;
+        if ($request->social_type && $request->social_link) {
+            $socialLinks = collect($request->social_type)
+                ->combine($request->social_link)
+                ->filter()
+                ->toArray();
+        }
+
+        /* CREATE VENDOR */
+        $vendor = Vendor::create([
+            'provider_id' => Auth::id(),
+            'shop_name'   => $request->shop_name,
+            'owner_name'  => $request->owner_name,
+            'email'       => $request->email,
+            'digipin'     => $request->digipin,
+            'mobile'      => $request->mobile,
+            'whatsapp'    => $request->whatsapp,
+            'address'     => $request->address,
+            'google_map'  => $request->google_map,
+            'service_area' => $request->service_area,
+
+            'main_category_id' => $request->main_category_id,
+            'category_id'      => $request->category_id,
+            'plan_id'          => $request->plan_id,
+
+            'opening_time' => $request->opening_time,
+            'closing_time' => $request->closing_time,
+            'mode'            => $request->payment_mode,
+            'transaction_id'  => $request->transaction_id,
+            'reference_number' => $request->reference_number,
+
+            'photo'  => $photo,
+            'gallery' => $gallery,
+
+            'social_links' => $socialLinks,
+            'special_recommendation' => $request->special_recommendation,
+            'internal_comments'      => $request->internal_comments,
+
+            'verification_status' => 'pending',
+            'is_active' => false,
+        ]);
+
+        /* PAYMENT */
+        Payment::create([
+            'vendor_id'       => $vendor->id,
+            'mode'            => $request->payment_mode,
+            'transaction_id'  => $request->transaction_id,
+            'status'          => in_array($request->payment_mode, ['gpay', 'bank_transfer'])
+                ? 'completed'
+                : 'pending',
+
+
         ]);
 
         return redirect()
-            ->route('provider.dashboard')
+            ->route('provider.add-vendor')
             ->with('success', 'Vendor added successfully. Waiting for admin approval.');
     }
 
+
+    /* =======================
+     * LIST VENDORS
+     * ======================= */
     public function index(Request $request)
     {
-        $vendors = Vendor::where('provider_id', auth()->id())
+        $vendors = Vendor::where('provider_id', Auth::id())
             ->when(
-                $request->name,
+                $request->shop_name,
                 fn($q) =>
-                $q->where('shop_name', 'like', '%' . $request->name . '%')
-            )
-            ->when(
-                $request->category,
-                fn($q) =>
-                $q->where('category', 'like', '%' . $request->category . '%')
-            )
-            ->when(
-                $request->ward,
-                fn($q) =>
-                $q->where('address', 'like', '%' . $request->ward . '%')
+                $q->where('shop_name', 'like', "%{$request->shop_name}%")
             )
             ->when(
                 $request->plan_id,
@@ -121,42 +153,130 @@ class VendorController extends Controller
 
         return view('provider.vendor_list', compact('vendors'));
     }
-    public function toggleStatus($id)
+
+    /* =======================
+     * EDIT FORM
+     * ======================= */
+    public function edit(Vendor $vendor)
     {
-        $vendor = Vendor::where('provider_id', auth()->id())->findOrFail($id);
+        $this->authorizeVendor($vendor);
 
-        $vendor->is_active = !$vendor->is_active;
-        $vendor->save();
+        $mainCategories = MainCategory::orderBy('name')->get();
+        $categories = Category::where('main_category_id', $vendor->main_category_id)->get();
+        $plans = Plan::orderBy('amount')->get();
 
-        return back()->with('success', 'Vendor status updated');
+        return view('provider.edit_vendor', compact(
+            'vendor',
+            'mainCategories',
+            'categories',
+            'plans'
+        ));
     }
-    public function edit($id)
-    {
-        $vendor = Vendor::where('provider_id', auth()->id())->findOrFail($id);
-        return view('provider.edit_vendor', compact('vendor'));
-    }
 
-    public function categoriesByType(Request $request)
+    /* =======================
+     * UPDATE VENDOR
+     * ======================= */
+    public function update(Request $request, Vendor $vendor)
     {
+        $this->authorizeVendor($vendor);
+
         $request->validate([
-            'type' => 'required|in:service,shop',
+            'shop_name'        => 'required',
+            'main_category_id' => 'required|exists:main_categories,id',
+            'category_id'      => 'required|exists:categories,id',
+            'mobile'           => 'required',
+            'plan_id'          => 'required|exists:plans,id',
         ]);
 
-        // Find main category (Service / Shop)
-        $main = MainCategory::where('slug', $request->type)
-            ->where('status', 'active')
-            ->first();
+        $data = $request->only([
+            'shop_name',
+            'main_category_id',
+            'category_id',
+            'owner_name',
+            'referral_number',
+            'mobile',
+            'whatsapp',
+            'address',
+            'google_map',
+            'opening_time',
+            'closing_time',
+            'service_area',
+            'special_recommendation',
+            'plan_id',
+        ]);
 
-        if (!$main) {
-            return response()->json([]);
+        /* ---------- Replace Photo ---------- */
+        if ($request->hasFile('photo')) {
+            if ($vendor->photo) {
+                Storage::disk('public')->delete($vendor->photo);
+            }
+            $data['photo'] = $request->file('photo')->store('vendors/photos', 'public');
         }
 
-        // Load sub categories
-        return response()->json(
-            $main->categories()
-                ->where('status', 'active')
-                ->select('id', 'name')
-                ->get()
-        );
+        /* ---------- Replace Gallery ---------- */
+        if ($request->hasFile('gallery')) {
+            if ($vendor->gallery) {
+                foreach ($vendor->gallery as $old) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+
+            $gallery = [];
+            foreach ($request->gallery as $img) {
+                $gallery[] = $img->store('vendors/gallery', 'public');
+            }
+            $data['gallery'] = $gallery;
+        }
+
+        $vendor->update($data);
+
+        return back()->with('success', 'Vendor updated successfully.');
+    }
+
+    /* =======================
+     * TOGGLE STATUS
+     * ======================= */
+    public function toggle(Vendor $vendor)
+    {
+        $this->authorizeVendor($vendor);
+
+        if ($vendor->verification_status !== 'approved') {
+            return back()->with('error', 'Vendor not approved by admin yet');
+        }
+
+        $vendor->update(['is_active' => !$vendor->is_active]);
+
+        return back()->with('success', 'Vendor status updated.');
+    }
+
+    /* =======================
+     * AUTH CHECK
+     * ======================= */
+    public function show(Vendor $vendor)
+    {
+        $this->authorizeVendor($vendor);
+
+        $mainCategories = MainCategory::orderBy('name')->get();
+        $plans = Plan::orderBy('amount')->get();
+        $payments=Payment::get();
+
+        $categories = Category::where('main_category_id', $vendor->main_category_id)->get();
+
+        return view('admin.vendor.show', compact(
+            'vendor',
+            'mainCategories',
+            'categories',
+            'plans',
+            'payments'
+        ));
+    }
+
+    private function authorizeVendor(Vendor $vendor)
+    {
+        $user = auth()->user();
+
+        if ($user->user_type === 'provider' && $vendor->provider_id !== $user->id) {
+            abort(403);
+        }
     }
 }

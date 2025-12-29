@@ -42,15 +42,27 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
-                                                    <img src="{{ $user->avatar ? Storage::url($user->avatar) : asset('assets/images/users/avatar-1.jpg') }}" alt="{{ $user->name }}" class="avatar-xs rounded-circle" />
+                                                    <img src="{{ $user->avatar ? Storage::url($user->avatar) : asset('assets/images/users/avatar-1.jpg') }}"
+                                                        alt="{{ $user->name }}" class="avatar-xs rounded-circle" />
                                                 </div>
                                                 <div class="flex-grow-1">{{ $user->name }}</div>
                                             </div>
                                         </td>
                                         <td>{{ $user->email }}</td>
-                                        <td>{{ $user->user_type ?? 'Regular User' }}</td>
                                         <td>
-                                            @if($user->status === 'active')
+                                            @if ($user->user_type === 'service_provider')
+                                                <span class="badge bg-info">Employee</span>
+                                            @elseif ($user->user_type === 'admin')
+                                                <span class="badge bg-primary">Admin</span>
+                                            @elseif ($user->user_type === 'user')
+                                                <span class="badge bg-secondary">Customer</span>
+                                            @else
+                                                <span class="badge bg-light text-dark">Unknown</span>
+                                            @endif
+                                        </td>
+
+                                        <td>
+                                            @if ($user->status === 'active')
                                                 <span class="badge bg-success">Active</span>
                                             @elseif($user->status === 'pending')
                                                 <span class="badge bg-warning">Pending</span>
@@ -64,19 +76,43 @@
                                         <td>
                                             <a href="" class="btn btn-sm btn-primary me-1">View</a>
                                             <a href="" class="btn btn-sm btn-warning me-1">Edit</a>
-                                            @if($user->status === 'blocked')
-                                                <form action="{{ route('admin.users.unblock', $user->id) }}" method="POST" style="display: inline;">
+                                            @if ($user->status === 'blocked')
+                                                <form action="{{ route('admin.users.unblock', $user->id) }}" method="POST"
+                                                    style="display: inline;">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Unblock this user?')">Unblock</button>
+                                                    <button type="submit" class="btn btn-sm btn-success"
+                                                        onclick="return confirm('Unblock this user?')">Unblock</button>
                                                 </form>
                                             @else
                                                 <form action="" method="POST" style="display: inline;">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Block this user?')">Block</button>
+                                                    <button type="submit" class="btn btn-sm btn-danger"
+                                                        onclick="return confirm('Block this user?')">Block</button>
                                                 </form>
                                             @endif
+                                            @if ($user->provider_status === 'pending')
+                                                <form method="POST"
+                                                    action="{{ route('admin.providers.approve', $user->id) }}"
+                                                    class="d-inline">
+
+                                                    @csrf
+                                                    @method('PATCH')
+
+                                                    <button class="btn btn-success btn-sm">
+                                                        Approve
+                                                    </button>
+                                                </form>
+                                                <form method="POST"
+                                                    action="{{ route('admin.providers.reject', $provider) }}"
+                                                    class="d-inline">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button class="btn btn-danger btn-sm">Reject</button>
+                                                </form>
+                                            @endif
+
                                         </td>
                                     </tr>
                                 @empty

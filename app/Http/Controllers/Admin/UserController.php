@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    
+
     public function allUsers(Request $request)
     {
         // Query users with pagination and optional search
@@ -23,24 +24,38 @@ class UserController extends Controller
         return view('admin.all_users', compact('users'));
     }
 
-   public function serviceProviders()
+public function serviceProviders()
 {
-    $users = User::where('user_type', 'service_provider')->get();
+    $vendors = Vendor::where('verification_status', 'Approved')
+        ->whereHas('mainCategory', function ($query) {
+            $query->where('name', 'service'); // Only vendors where main category is "Shop"
+        })
+        ->with(['provider', 'mainCategory', 'category', 'plan'])
+        ->paginate(10);
 
-    return view('admin.service_provider', compact('users'));
+    return view('admin.service_provider', compact('vendors'));
 }
+
 
 
     public function shopOwners()
     {
-        $users = User::where('user_type', 'shop_owner')->paginate(10);
-        return view('admin.shop_owners', compact('users'));
+
+    $vendors = Vendor::where('verification_status', 'Approved')
+        ->whereHas('mainCategory', function ($query) {
+            $query->where('name', 'shop'); // Only vendors where main category is "Shop"
+        })
+        ->with(['provider', 'mainCategory', 'category', 'plan'])
+        ->paginate(10);
+        return view('admin.shop_owners', compact('vendors'));
     }
 
     public function verificationRequests()
 {
-    $requests = User::where('status', 'pending')->paginate(10);
-    return view('admin.verification', compact('requests'));
+    $vendors = Vendor::where('verification_status', 'Pending')
+            ->with('provider')
+            ->paginate(10);
+    return view('admin.verification', compact('vendors'));
 }
 
 
@@ -90,5 +105,25 @@ class UserController extends Controller
         $user->update($request->only(['name', 'email', 'user_type', 'status']));
 
         return back()->with('success', 'User updated successfully.');
+    }
+
+     public function approve($id)
+    {
+        $vendor = Vendor::findOrFail($id);
+        $vendor->update([
+            'verification_status' => 'Approved',
+            'is_active' => true
+        ]);
+
+        return redirect()->back()->with('success', 'Vendor approved successfully.');
+    }
+
+    /** Delete vendor */
+    public function delete($id)
+    {
+        $vendor = Vendor::findOrFail($id);
+        $vendor->delete();
+
+        return redirect()->back()->with('success', 'Vendor deleted successfully.');
     }
 }
