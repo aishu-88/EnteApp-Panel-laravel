@@ -89,8 +89,10 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/ads/create', [AdvertisementController::class, 'create'])->name('create-ads');
         Route::post('/ads/store', [AdvertisementController::class, 'store'])->name('ads.store');
         // Offers
-        Route::get('/offers/all', [OfferController::class, 'allOffers'])->name('all-offers');
+        Route::get('/offers', [OfferController::class, 'alloffer'])->name('all-offers'); 
         Route::get('/offers/create', [OfferController::class, 'create'])->name('create-offer');
+        Route::post('/offers/store', [OfferController::class, 'store'])->name('offers.store');
+        Route::delete('/offers/{offer}', [OfferController::class, 'destroy'])->name('offers.destroy');
         Route::get('/offers/scheduled', [OfferController::class, 'scheduledOffers'])->name('scheduled-offers');
         // Rewards
         Route::get('/rewards/daily-challenges', [RewardController::class, 'dailyChallenges'])->name('daily-challenges');

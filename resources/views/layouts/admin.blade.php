@@ -332,11 +332,6 @@
                                 </ul>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('admin.reports') }}">
-                                <i class="ri-file-chart-line"></i> <span data-key="t-report">Reports</span></a>
-                        </li>
-
                         <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Profile & Settings</span></li>
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarProfile" data-bs-toggle="collapse" role="button"
