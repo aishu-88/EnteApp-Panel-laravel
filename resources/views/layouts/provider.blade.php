@@ -148,49 +148,118 @@
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
-                        <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+                        {{-- Main --}}
+                        <li class="menu-title"><span>Menu</span></li>
+
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('provider.dashboard') ? 'active' : '' }}"
                                 href="{{ route('provider.dashboard') }}">
                                 <i class="ri-dashboard-2-line"></i>
                                 <span>Dashboard</span>
                             </a>
-
                         </li>
+
+                        {{-- Vendors --}}
+                        <li class="menu-title"><span>Vendors</span></li>
+
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('provider.add-vendor') ? 'active' : '' }}"
                                 href="{{ route('provider.add-vendor') }}">
                                 <i class="ri-user-add-line"></i>
                                 <span>Add Vendor</span>
                             </a>
-
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('provider.vendor-list') ? 'active' : '' }}"
                                 href="{{ route('provider.vendor-list') }}">
-                                <i class="ri-user-line"></i>
+                                <i class="ri-team-line"></i>
                                 <span>Vendor List</span>
                             </a>
-
                         </li>
+
+                        {{-- Analytics --}}
+                        <li class="menu-title"><span>Analytics</span></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-bar-chart-2-line"></i>
+                                <span>Your Statistics</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-lightbulb-flash-line"></i>
+                                <span>Your Recommendations</span>
+                            </a>
+                        </li>
+
+                        {{-- Communication --}}
+                        <li class="menu-title"><span>Communication</span></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-mail-line"></i>
+                                <span>Admin Messages / Reports</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-notification-3-line"></i>
+                                <span>Notifications</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-alarm-line"></i>
+                                <span>Reminders</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-message-3-line"></i>
+                                <span>Company Messages</span>
+                            </a>
+                        </li>
+
+                        {{-- Submissions --}}
+                        <li class="menu-title"><span>Management</span></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="#">
+                                <i class="ri-file-list-3-line"></i>
+                                <span>Submissions</span>
+                            </a>
+                        </li>
+
+                        {{-- Account --}}
+                        <li class="menu-title"><span>Account</span></li>
+
                         <li class="nav-item">
                             <a class="nav-link menu-link {{ request()->routeIs('provider.profile') ? 'active' : '' }}"
                                 href="{{ route('provider.profile') }}">
-                                <i class="ri-user-line"></i>
+                                <i class="ri-user-settings-line"></i>
                                 <span>Profile</span>
                             </a>
-
                         </li>
+
                         <li class="nav-item">
                             <form method="POST" action="{{ route('provider.logout') }}">
                                 @csrf
                                 <button type="submit" class="nav-link menu-link logout-btn">
-                                    <i class="ri-logout-box-line"></i>
-                                    <span data-key="t-logout">Logout</span>
+                                    <i class="ri-logout-box-r-line"></i>
+                                    <span>Logout</span>
                                 </button>
                             </form>
                         </li>
+
                     </ul>
+
                 </div>
             </div>
             <div class="sidebar-background"></div>
@@ -224,6 +293,8 @@
     <script src="{{ asset('../libs/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('../js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
     <script src="{{ asset('../js/plugins.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {{-- Counter Up --}}
     <script>
         // Counter animation

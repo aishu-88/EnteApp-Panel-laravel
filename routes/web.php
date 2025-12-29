@@ -67,6 +67,7 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         Route::get('/users/shop-owners', [UserController::class, 'shopOwners'])->name('shop-owners');
         Route::get('/users/verification-requests', [UserController::class, 'verificationRequests'])->name('verification-requests');
         Route::get('/users/blocked', [UserController::class, 'blockedUsers'])->name('blocked-users');
+        Route::get('admin/vendor/{vendor}', [VendorController::class, 'show'])->name('vendor.show');
 
         Route::patch('/vendor-verifications/{id}/approve', [UserController::class, 'approve'])->name('vendor.approve');
 
@@ -95,6 +96,15 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
         // Route::get('/advertisements/create', [AdvertisementController::class, 'create'])->name('create-ads');
         Route::get('/ads/create', [AdvertisementController::class, 'create'])->name('create-ads');
         Route::post('/ads/store', [AdvertisementController::class, 'store'])->name('ads.store');
+        Route::get('/admin/ads/{id}/edit', [AdvertisementController::class, 'edit'])
+            ->name('admin.ads.edit');
+
+        Route::delete('/admin/ads/{id}', [AdvertisementController::class, 'destroy'])
+            ->name('admin.ads.destroy');
+        Route::put('/admin/ads/{id}', [AdvertisementController::class, 'update'])
+            ->name('admin.ads.update');
+
+
         // Offers
         Route::get('/offers/all', [OfferController::class, 'allOffers'])->name('all-offers');
         Route::get('/offers/create', [OfferController::class, 'create'])->name('create-offer');
@@ -132,7 +142,7 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
 
 
 
-    Route::prefix('provider')->name('provider.')->group(function () {
+Route::prefix('provider')->name('provider.')->group(function () {
 
     Route::get('/register', [AuthController::class, 'showRegister'])
         ->name('register');
@@ -180,10 +190,10 @@ Route::middleware(['auth', 'service_provider'])->prefix('provider')->name('provi
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy']) ->name('admin.profile.destroy');
-        });
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('admin.profile.destroy');
+    });
 
     Route::get('/profile', [ProviderProfileController::class, 'edit'])
         ->name('profile');

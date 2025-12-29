@@ -79,18 +79,6 @@
                                         <td>{{ $vendor->created_at->format('Y-m-d') }}</td>
 
                                         <td>
-                                            {{-- Approve Button --}}
-                                            @if ($vendor->verification_status !== 'Approved')
-                                                <form action="{{ route('admin.vendors.approve', $vendor->id) }}"
-                                                    method="POST" style="display:inline;">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn btn-sm btn-success"
-                                                        onclick="return confirm('Approve this vendor?')">
-                                                        Approve
-                                                    </button>
-                                                </form>
-                                            @endif
 
                                             {{-- Delete Button --}}
                                             <form action="{{ route('admin.vendor.delete', $vendor->id) }}" method="POST"

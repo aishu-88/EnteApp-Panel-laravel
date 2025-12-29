@@ -60,6 +60,12 @@
                                     </td>
 
                                     <td>
+                                        {{-- View --}}
+                                        <a href="{{ route('admin.vendor.show', $vendor->id) }}"
+                                            class="btn btn-sm btn-primary">
+                                            View
+                                        </a>
+
                                         {{-- Approve --}}
                                         <form action="{{ route('admin.vendor.approve', $vendor->id) }}" method="POST"
                                             class="d-inline">
@@ -82,6 +88,7 @@
                                             </button>
                                         </form>
                                     </td>
+
                                 </tr>
                             @empty
                                 <tr>

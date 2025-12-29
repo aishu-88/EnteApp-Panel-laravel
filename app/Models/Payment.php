@@ -10,7 +10,7 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'vendor_id', 'mode', 'reference_number', 'status'
+        'vendor_id', 'mode', 'transaction_id', 'status'
     ];
 
     public function vendor()
