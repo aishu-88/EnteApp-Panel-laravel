@@ -72,13 +72,22 @@ class VendorController extends Controller
         }
 
         /* SOCIAL LINKS */
-        $socialLinks = null;
-        if ($request->social_type && $request->social_link) {
-            $socialLinks = collect($request->social_type)
-                ->combine($request->social_link)
-                ->filter()
-                ->toArray();
+        /* SOCIAL LINKS */
+        $socialLinks = [];
+
+        if ($request->has('social_type') && $request->has('social_link')) {
+            foreach ($request->social_type as $index => $type) {
+                $link = $request->social_link[$index] ?? null;
+
+                if (!empty($type) && !empty($link)) {
+                    $socialLinks[] = [
+                        'type' => $type,
+                        'link' => $link,
+                    ];
+                }
+            }
         }
+
 
         /* CREATE VENDOR */
         $vendor = Vendor::create([
@@ -119,6 +128,7 @@ class VendorController extends Controller
             'vendor_id'       => $vendor->id,
             'mode'            => $request->payment_mode,
             'transaction_id'  => $request->transaction_id,
+            'reference_number' => $request->reference_number,
             'status'          => in_array($request->payment_mode, ['gpay', 'bank_transfer'])
                 ? 'completed'
                 : 'pending',
@@ -258,7 +268,7 @@ class VendorController extends Controller
 
         $mainCategories = MainCategory::orderBy('name')->get();
         $plans = Plan::orderBy('amount')->get();
-        $payments=Payment::get();
+        $payments = Payment::get();
 
         $categories = Category::where('main_category_id', $vendor->main_category_id)->get();
 

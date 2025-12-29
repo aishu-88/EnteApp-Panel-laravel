@@ -89,6 +89,9 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
 
         // Staff
         Route::get('/staff/employees', [StaffController::class, 'employees'])->name('employees');
+        Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
+        Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::get('/staff/roles-permissions', [StaffController::class, 'rolesPermissions'])->name('roles-permissions');
         Route::get('/staff/activity-logs', [StaffController::class, 'activityLogs'])->name('activity-logs');
         // Ads
@@ -106,7 +109,7 @@ Route::middleware(['auth', 'admin'])   // 👈 custom AdminMiddleware
 
 
         // Offers
-        Route::get('/offers', [OfferController::class, 'alloffer'])->name('all-offers'); 
+        Route::get('/offers', [OfferController::class, 'alloffer'])->name('all-offers');
         Route::get('/offers/create', [OfferController::class, 'create'])->name('create-offer');
         Route::post('/offers/store', [OfferController::class, 'store'])->name('offers.store');
         Route::delete('/offers/{offer}', [OfferController::class, 'destroy'])->name('offers.destroy');

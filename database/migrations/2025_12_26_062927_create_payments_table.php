@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->foreignId('vendor_id')->constrained('vendors')->onDelete('cascade');
             $table->enum('mode', ['gpay', 'bank_transfer', 'cash']);
             $table->string('reference_number')->nullable();
+            $table->string('transaction_id')->nullable();
             $table->enum('status', ['pending', 'completed'])->default('pending');
             $table->timestamps();
         });

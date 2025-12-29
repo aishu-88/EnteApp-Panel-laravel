@@ -28,7 +28,7 @@ public function serviceProviders()
 {
     $vendors = Vendor::where('verification_status', 'Approved')
         ->whereHas('mainCategory', function ($query) {
-            $query->where('name', 'service'); // Only vendors where main category is "Shop"
+            $query->where('name', 'service'); 
         })
         ->with(['provider', 'mainCategory', 'category', 'plan'])
         ->paginate(10);

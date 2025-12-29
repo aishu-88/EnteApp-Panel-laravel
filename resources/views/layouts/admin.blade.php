@@ -1,4 +1,3 @@
-{{-- resources/views/layouts/admin.blade.php --}}
 <!doctype html>
 <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg"
     data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
@@ -28,7 +27,7 @@
                     <div class="d-flex">
                         {{-- LOGO --}}
                         <div class="navbar-brand-box horizontal-logo">
-                            <a href="{{ route('admin.dashboard') }}" class="logo logo">
+                            <a href="{{ route('provider.dashboard') }}" class="logo logo">
                                 <span class="logo-sm">
                                     <img src="{{ asset('../images/logo.png') }}" alt="" height="22">
                                 </span>
@@ -36,7 +35,7 @@
                                     <img src="{{ asset('../images/logo.png') }}" alt="" height="17">
                                 </span>
                             </a>
-                            <a href="{{ route('admin.dashboard') }}" class="logo logo-light">
+                            <a href="{{ route('provider.dashboard') }}" class="logo logo-light">
                                 <span class="logo-sm">
                                     <img src="{{ asset('../images/logo.png') }}" alt="" height="22">
                                 </span>
@@ -77,21 +76,26 @@
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="d-flex align-items-center">
                                     <img class="rounded-circle header-profile-user"
-                                        src="{{ asset('../images/users/avatar-1.jpg') }}" alt="Header Avatar">
+                                        src="{{ Auth::user()->profile_image
+                                            ? asset('storage/' . Auth::user()->profile_image)
+                                            : asset('../images/users/avatar-1.jpg') }}"
+                                        alt="Header Avatar">
+
                                     <span class="text-start ms-xl-2">
                                         <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
                                             {{ Auth::user()->name }}
                                         </span>
 
                                         <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">
-                                            {{ Auth::user()->user_type }}
+                                            {{ Auth::user()->user_type === 'service_provider' ? 'Employee' : ucfirst(Auth::user()->user_type) }}
                                         </span>
+
                                     </span>
                                 </span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <h6 class="dropdown-header">Welcome {{ Auth::user()->name }}</h6>
-                                <a class="dropdown-item" href="{{ route('admin.profile') }}"><i
+                                <a class="dropdown-item" href="{{ route('provider.profile') }}"><i
                                         class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span
                                         class="align-middle">Profile</span></a>
                                 <a class="dropdown-item" href=""><i
@@ -103,9 +107,9 @@
                                         class="align-middle">Settings</span></a>
                                 <form method="POST" action="{{ route('admin.logout') }}">
                                     @csrf
-                                    <button type="submit" class="nav-link menu-link btn btn-link ">
-                                        <i class="ri-file-chart-line"></i>
-                                        <span data-key="t-logout">Logout</span>
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
+                                        <span class="align-middle" data-key="t-logout">Logout</span>
                                     </button>
                                 </form>
                             </div>
@@ -261,17 +265,6 @@
                                             Create New Ad </a>
                                     </li>
 
-                                    <li class="nav-item">
-                                        <a href="" class="nav-link"
-                                            data-key="t-pending-ad">
-                                            Pending Ads </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="" class="nav-link"
-                                            data-key="t-pending-ad">
-                                            Ads Slots Management </a>
-                                    </li>
-
                                 </ul>
                             </div>
                         </li>
@@ -391,17 +384,7 @@
                                 </ul>
                             </div>
                         </li>
-<<<<<<< HEAD
                         <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Profile & Settings</span></li>
-=======
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('admin.reports') }}">
-                                <i class="ri-file-chart-line"></i> <span data-key="t-report">Reports</span></a>
-                        </li>
-
-                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Profile &
-                                Settings</span></li>
->>>>>>> 8ee62778dbf38d190d8b9142028a1fa6e93bd63e
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#sidebarProfile" data-bs-toggle="collapse"
                                 role="button" aria-expanded="false" aria-controls="sidebarProfile">
